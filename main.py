@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 
+# ----------------- "Banco de dados" -----------------------#
 alunos=[
     {
         "matricula":1,
@@ -17,11 +18,13 @@ alunos=[
 matricula_atual = 1
 index = 0
 
-
+# ----------------- Funções -----------------------#
 def limparCampos():
-    txtMatricula.config(state=NORMAL)
-    txtMatricula.delete(0,END)
-    txtMatricula.config(state=DISABLED)
+    # Como limpar o campo desabilitado (habilita, edita, desabilita)
+    txtMatricula.config(state=NORMAL)       # habilitando o campo
+    txtMatricula.delete(0,END)         # limpando seu valor
+    txtMatricula.config(state=DISABLED)     # desabilitando o campo
+
     txtNome.delete(0, END)
     txtIdade.delete(0, END)
     comboCursos.set("")  # deletando do comboBox
@@ -41,6 +44,26 @@ def preencherCampos(event)->None:
     txtIdade.insert(END, str(aluno["idade"]))
     comboCursos.insert(END, aluno["curso"])
 
+def editarAluno() -> None:
+    # Coletando as informações do aluno
+    nome = txtNome.get()
+    idade = txtIdade.get()
+    curso = comboCursos.get()
+    novato = opcao.get()
+
+    opcacaoSelecionada = messagebox.askyesno("Tem certeza amigão(oa)?", "Deseja alterar os dados?")
+
+    if opcacaoSelecionada:
+        # Coletar o aluno
+        aluno = alunos[index]
+        aluno['nome'] = nome
+        aluno['idade'] = idade
+        aluno['curso'] = curso
+        aluno['novato'] = novato
+        messagebox.showinfo("Sucesso","Dados alterados com sucesso!")
+
+    limparCampos()
+    atualizarTabela()
 
 def atualizarTabela()->None:
     for linha in tabela.get_children(): #get_children() -> Retorna todas as linhas da tabela
@@ -62,6 +85,7 @@ def AdicionarAluno()->None:
     idade = int(txtIdade.get())
     curso = comboCursos.get()
     novato = opcao.get()
+
     aluno = {
         "matricula": matricula_atual,
         "nome":nome,
@@ -76,7 +100,13 @@ def AdicionarAluno()->None:
     limparCampos()
     atualizarTabela()
 
-
+def deletarAluno()-> None:
+    opcaoSelecionada = messagebox.askyesno("Tem certeza meu chapa?","Deseja Remover o aluno?")
+    if opcaoSelecionada:
+        alunos.remove(alunos[index])
+        messagebox.showinfo("Sucesso!","Dados apagados com sucesso!")
+    limparCampos()
+    atualizarTabela()
 
 #----------------------Configurações da janela-------------------#
 backGroundColor = "#141414"
@@ -117,7 +147,7 @@ labelCurso = Label(janela,text="Curso", font="Times 18 bold",
 labelCurso.grid(row=3,column=0,sticky=E)
 
 cursos = ["Javascript","Python","React","NodeJs"]
-comboCursos = ttk.Combobox(janela,font="Times 16",values=cursos)
+comboCursos = ttk.Combobox(janela,font="Times 16", values=cursos)
 comboCursos.grid(row=3,column=1,sticky=W)
 
 labelNovato = Label(janela,text="Novato?",font="Times 18 bold",
@@ -137,11 +167,11 @@ btnAdicionar = Button(janela,text="Adicionar",
 btnAdicionar.grid(row=5,column=0)
 
 btnEditar = Button(janela,text="Editar",font="Times 18 bold",
-                   fg=backGroundColor,bg="#00ffa3",height=1,width=8)
+                   fg=backGroundColor,bg="#00ffa3",height=1,width=8, command=editarAluno)
 btnEditar.grid(row=5,column=1)
 
 btnApagar = Button(janela,text="Apagar",font="Times 18 bold",
-                   fg=backGroundColor,bg="#00ffa3",height=1,width=8)
+                   fg=backGroundColor,bg="#00ffa3",height=1,width=8,command=deletarAluno)
 btnApagar.grid(row=5,column=2)
 
 
